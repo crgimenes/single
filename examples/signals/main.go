@@ -4,6 +4,7 @@ import (
 	"fmt"
 	"os"
 	"os/signal"
+	"syscall"
 	"time"
 
 	"github.com/crgimenes/single"
@@ -23,7 +24,7 @@ func main() {
 	}
 	go func() {
 		sc := make(chan os.Signal, 1)
-		signal.Notify(sc, os.Interrupt)
+		signal.Notify(sc, syscall.SIGINT, syscall.SIGTERM)
 		<-sc
 		errc := single.Stop(lockfile)
 		if errc != nil {
@@ -40,4 +41,5 @@ func main() {
 		time.Sleep(1 * time.Second)
 		fmt.Print(".")
 	}
+
 }
