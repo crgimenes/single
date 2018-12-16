@@ -8,7 +8,7 @@ import (
 
 // Start checks to see if a process lock file exists,
 // if it does, it returns an error, otherwise, it creates the file.
-func Start(name string) (err error) {
+func Start(name string) (ok bool, err error) {
 	f, err := os.OpenFile(filepath.Join(os.TempDir(), name), os.O_RDWR|os.O_CREATE|os.O_EXCL, 0600)
 	if err != nil {
 		return
@@ -18,6 +18,10 @@ func Start(name string) (err error) {
 		return
 	}
 	err = f.Close()
+	if err != nil {
+		return
+	}
+	ok = true
 	return
 }
 
