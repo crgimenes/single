@@ -61,3 +61,55 @@ func main() {
 	}
 }
 ```
+
+---
+
+For a process that does not run indefinitely, besides intercepting the signals use defer in the main function to ensure that street completion routine will always be executed
+
+```go
+package main
+
+import (
+	"fmt"
+	"os"
+	"os/signal"
+	"syscall"
+	"time"
+
+	"github.com/crgimenes/single"
+)
+
+const lockfile = "signal.pid"
+
+func shutdown() {
+	err := single.Stop(lockfile)
+	if err != nil {
+		fmt.Println(err)
+		os.Exit(1)
+	}
+	fmt.Println("\n\nhave a nice day!")
+	os.Exit(0)
+}
+
+func main() {
+	err := single.Start(lockfile)
+	defer shutdown()
+	if err != nil {
+		if os.IsExist(err) {
+			fmt.Println("another instance of the executable is already running")
+			os.Exit(1)
+		}
+		fmt.Println(err)
+		os.Exit(1)
+	}
+	go func() {
+		sc := make(chan os.Signal, 1)
+		signal.Notify(sc, syscall.SIGINT, syscall.SIGTERM)
+		<-sc
+		shutdown()
+	}()
+
+	fmt.Println("Processing...")
+	time.Sleep(3 * time.Second)
+}
+```
