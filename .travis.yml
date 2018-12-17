@@ -1,0 +1,21 @@
+sudo: false
+dist: trusty
+language: go
+
+os:
+  - linux
+
+go:
+  - "1.11.x"
+
+git:
+  depth: 1
+
+env:
+  global:
+    - GO111MODULE=on
+
+install: true
+
+script:
+  - go test --race -coverprofile c.out ./...
