@@ -13,18 +13,18 @@ func Start(name string) (err error) {
 	if err != nil {
 		return
 	}
+
 	_, err = fmt.Fprintf(f, "%10d", os.Getpid())
 	if err != nil {
 		return
 	}
+
 	err = f.Close()
-	if err != nil {
-		return
-	}
+
 	return
 }
 
-// Stop remove the lock file
+// Stop remove the lock file.
 func Stop(name string) (err error) {
 	err = os.Remove(filepath.Join(os.TempDir(), name))
 	return
